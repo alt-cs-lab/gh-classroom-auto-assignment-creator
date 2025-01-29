@@ -104,15 +104,34 @@
         }
         return false;
     }
+    
+    function checkTrue(assignment, key) {   
+        if(assignment.hasOwnProperty(key)) {
+            return assignment[key] || assignment[key].toLowerCase() === "true";
+        }
+        return false;
+    }
 
     function autoFillAssignment() {
         try{
         let assignments = JSON.parse(localStorage.getItem("assignments"));
         let currentIndex = parseInt(localStorage.getItem("currentIndex"));
+        if (!assignments || !currentIndex) {
+            console.error("No assignments loaded");
+            return
+        }
+        for (; currentIndex < assignments.length && checkTrue(assignments[currentIndex], "Added"); currentIndex++) {
+            console.log("Skipping " + assignments[i]["Name"]);
+        }
+        if (currentIndex >= assignments.length) {
+            console.error("All assignments created");
+            return;
+        }
         let assignment = assignments[currentIndex];
         updateLabName(assignment["Name"] + " - " + assignment["Assignment Name"]);
         if(createAssignment(assignment) && setStarterCode(assignment) && setAutoGrading(assignment)) {
             console.log(assignment["Name"] + " finished");
+            assignments["Added"] = true;
             localStorage.setItem("currentIndex", currentIndex + 1);
             return true;
         }}
