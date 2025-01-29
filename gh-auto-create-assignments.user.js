@@ -59,8 +59,9 @@
         if (window.location.href.includes("current_step=1")) {
             console.log("Step 2: Setting Starter Code");
 
-            setInputValue('input[name="starter_code_repo"]', assignment["Starter Code"]);
-            clickButton('button[type="submit"]'); // Click "Next"
+            setInputValue('#github-repo-input--default', assignment["Starter Code"]);
+            setInputValue('#assignment_form_visibility_private', assignment["Privacy"]);
+            submitForm('form', 1000); // Click "Continue"
         }
     }
 
@@ -85,7 +86,7 @@
 			"Privacy": "private",
 			"Type": "individual",
 			"Deadline": "2021-12-31T23:59:59Z",
-			"Starter Code": ""
+			"Starter Code": "ksu-cis300-spring-2025/lab-3-model-solution-weeser"
 		};
 		createAssignment(assignment);
         console.log("Assignment created successfully");
