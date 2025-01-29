@@ -249,12 +249,26 @@
     }
 
     function exportAssignments() {
-        let assignments = localStorage.getItem("assignments");
+        let assignments = JSON.parse(localStorage.getItem("assignments"));
         if (!assignments) {
             console.error("No assignments to export");
             return;
         }
-        let blob = new Blob([assignments], { type: "text/csv;charset=utf-8;" });
+    
+        let csv = [];
+        let headers = Object.keys(assignments[0]);
+        csv.push(headers.join(","));
+    
+        for (let i = 0; i < assignments.length; i++) {
+            let row = [];
+            for (let j = 0; j < headers.length; j++) {
+                row.push(assignments[i][headers[j]]);
+            }
+            csv.push(row.join(","));
+        }
+    
+        let csvContent = csv.join("\n");
+        let blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "assignments.csv";
