@@ -36,6 +36,13 @@
         }
     }
 
+    function submitForm(selector, delay = 2000) {
+        let form = document.querySelector(selector);
+        if (button) {
+            setTimeout(() => form.submit(), delay);
+        }
+    }
+
     function createAssignment(assignment) {
         if (window.location.pathname.includes("/new_assignments/new")) {
             console.log("Step 1: Creating Assignment");
@@ -44,7 +51,7 @@
             setInputValue('#assignment_form_deadline_deadline_at', assignment["Deadline"]);            
             setDropdownValue('select[name="submission_type"]', "individual"); // "individual" or "group"
 
-            clickButton('button[type="submit"]'); // Click "Create Assignment"
+            submitForm('#assignment-form', 1000); // Click "Create Assignment"/"continue"
         }
     }
 
