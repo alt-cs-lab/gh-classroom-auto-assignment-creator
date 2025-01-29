@@ -8,6 +8,7 @@
 // @match        https://classroom.github.com/classrooms/*/new_assignments/continue?current_step=1
 // @match        https://classroom.github.com/classrooms/*/new_assignments/continue?current_step=2
 // @grant        none
+// @downloadURL  https://github.com/alt-cs-lab/gh-classroom-auto-assignment-creator/raw/main/gh-auto-create-assignments.js
 // ==/UserScript==
 
 (function () {
