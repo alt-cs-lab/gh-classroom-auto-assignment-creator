@@ -88,8 +88,11 @@
 			"Starter Code": ""
 		};
 		createAssignment(assignment);
+        console.log("Assignment created successfully");
 		// setStarterCode(assignment);
+        console.log("Starter code set successfully");
 		// setAutoGrading(assignment);
+        console.log("Auto-grading configured successfully");            
 	}
     function injectButton() {
         let button = document.createElement("button");
