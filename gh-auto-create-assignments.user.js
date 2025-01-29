@@ -69,12 +69,7 @@
         if (window.location.href.includes("current_step=2")) {
             console.log("Step 3: Configuring Auto-Grading");
 
-            if (assignment["Enable AutoGrading"] === "yes") {
-                let toggle = document.querySelector('input[type="checkbox"][name="autograding_enabled"]');
-                if (toggle && !toggle.checked) {
-                    toggle.click(); // Enable auto-grading
-                }
-            }
+            console.log("Do this manually....I don't have time");
 
             clickButton('#new-assignment-cancel + button[type="submit"]', 500); // Click "finish"
         }
@@ -95,15 +90,52 @@
 		setAutoGrading(assignment);
         console.log("Auto-grading configured");            
 	}
-    function injectButton() {
+
+    function loadAssignmentsFromCSV(csv) {
+        let lines = csv.split("\n");
+        let headers = lines[0].split(",");
+        let assignments = [];
+
+        for (let i = 1; i < lines.length; i++) {
+            let obj = {};
+            let currentline = lines[i].split(",");
+
+            for (let j = 0; j < headers.length; j++) {
+                obj[headers[j].trim()] = currentline[j].trim();
+            }
+
+            assignments.push(obj);
+        }
+
+        localStorage.setItem("assignments", JSON.stringify(assignments));
+        localStorage.setItem("currentIndex", 0);
+    }
+
+    function getFile () {
+        let fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = ".csv";
+        fileInput.onchange = function (event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                loadAssignmentsFromCSV(e.target.result);
+            };
+            reader.readAsText(file);
+        };
+        fileInput.click();
+    }
+
+    function injectButton(innerHTML, top, right, clickHandler) {
         let button = document.createElement("button");
-        button.innerHTML = "Auto Fill Assignment";
+        button.innerHTML = innerHTML;
         button.style.position = "fixed";
-        button.style.top = "10px";
-        button.style.right = "10px";
+        button.style.top = top + "px";
+        button.style.right = right +"px";
         button.style.zIndex = 1000;
-        button.onclick = autoFillAssignment;
+        button.onclick = clickHandler;
         document.body.appendChild(button);
     }
-    injectButton();
+    injectButton("Auto Fill Assignment", 10, 10, autoFillAssignment);
+    injectButton("Load Assignments", 40, 10, getFile);
 })();
