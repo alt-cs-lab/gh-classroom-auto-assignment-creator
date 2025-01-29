@@ -85,8 +85,15 @@
 		// setStarterCode(assignment);
 		// setAutoGrading(assignment);
 	}
-
-    // Run the function after page loads
-    // document.addEventListener("DOMContentLoaded", autoFillAssignment);
-    window.onload = autoFillAssignment;
+    function injectButton() {
+        let button = document.createElement("button");
+        button.innerHTML = "Auto Fill Assignment";
+        button.style.position = "fixed";
+        button.style.top = "10px";
+        button.style.right = "10px";
+        button.style.zIndex = 1000;
+        button.onclick = autoFillAssignment;
+        document.body.appendChild(button);
+    }
+    injectButton();
 })();
