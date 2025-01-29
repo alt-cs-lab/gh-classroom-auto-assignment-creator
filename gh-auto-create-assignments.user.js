@@ -61,7 +61,7 @@
 
             setInputValue('#github-repo-input--default', assignment["Starter Code"]);
             setInputValue('#assignment_form_visibility_private', assignment["Privacy"]);
-            submitForm('form', 1000); // Click "Continue"
+            clickButton('#new-assignment-cancel button[type="submit"]', 500); // Click "Continue"
         }
     }
 
@@ -76,7 +76,7 @@
                 }
             }
 
-            clickButton('button[type="submit"]'); // Click "Finish"
+            clickButton('#new-assignment-cancel button[type="submit"]', 500); // Click "finish"
         }
     }
 
