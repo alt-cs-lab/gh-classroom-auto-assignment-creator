@@ -37,7 +37,7 @@
     }
 
     function createAssignment(assignment) {
-        if (window.location.pathname.includes("/assignments/new")) {
+        if (window.location.pathname.includes("/new_assignments/new")) {
             console.log("Step 1: Creating Assignment");
 
             setInputValue('input[name="title"]', assignment["Assignment Name"]);
