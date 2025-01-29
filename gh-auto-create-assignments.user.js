@@ -106,12 +106,12 @@
 
     function loadAssignmentsFromCSV(csv) {
         let lines = csv.split("\n");
-        let headers = lines[0].split(",").trim();
+        let headers = lines[0].trim().split(",");
         let assignments = [];
 
         for (let i = 1; i < lines.length; i++) {
             let obj = {};
-            let currentline = lines[i].split(",").trim();
+            let currentline = lines[i].trim().split(",");
             if (currentline.length !== headers.length) {
                 console.error("Incomplete data for row " + i);
             } else {
