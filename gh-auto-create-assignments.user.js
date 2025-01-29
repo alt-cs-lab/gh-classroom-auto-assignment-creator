@@ -87,5 +87,5 @@
 	}
 
     // Run the function after page loads
-    window.addEventListener("load", autoFillAssignment);
+    document.addEventListener("DOMContentLoaded", autoFillAssignment);
 })();
