@@ -38,7 +38,7 @@
 
     function submitForm(selector, delay = 2000) {
         let form = document.querySelector(selector);
-        if (button) {
+        if (form) {
             setTimeout(() => form.submit(), delay);
         }
     }
