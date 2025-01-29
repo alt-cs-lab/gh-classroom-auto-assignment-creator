@@ -47,11 +47,17 @@
         if (window.location.pathname.includes("/new_assignments/new")) {
             console.log("Step 1: Creating Assignment");
 
-            setInputValue('#assignment_form_title', assignment["Assignment Name"]);
-            setInputValue('#assignment_form_deadline_deadline_at', assignment["Deadline"]);            
+            setInputValue(
+                "#assignment_form_title",
+                assignment["Assignment Name"]
+            );
+            setInputValue(
+                "#assignment_form_deadline_deadline_at",
+                assignment["Deadline"]
+            );
             setDropdownValue('select[name="submission_type"]', "individual"); // "individual" or "group"
 
-            submitForm('#assignment-form', 1000); // Click "Create Assignment"/"continue"
+            submitForm("#assignment-form", 1000); // Click "Create Assignment"/"continue"
         }
     }
 
@@ -59,8 +65,14 @@
         if (window.location.href.includes("current_step=1")) {
             console.log("Step 2: Setting Starter Code");
 
-            setInputValue('#github-repo-input--default', assignment["Starter Code"]);
-            setInputValue('#assignment_form_visibility_private', assignment["Privacy"]);
+            setInputValue(
+                "#github-repo-input--default",
+                assignment["Starter Code"]
+            );
+            setInputValue(
+                "#assignment_form_visibility_private",
+                assignment["Privacy"]
+            );
             clickButton('#new-assignment-cancel + button[type="submit"]', 500); // Click "Continue"
         }
     }
@@ -75,33 +87,37 @@
         }
     }
 
-	function autoFillAssignment() {
-		let assignment = {
-			"Assignment Name": "Assignment 1",
-			"Privacy": "private",
-			"Type": "individual",
-			"Deadline": "2021-12-31T23:59:59Z",
-			"Starter Code": "ksu-cis300-spring-2025/lab-3-model-solution-weeser"
-		};
-		createAssignment(assignment);
+    function autoFillAssignment() {
+        let assignment = {
+            "Assignment Name": "Assignment 1",
+            Privacy: "private",
+            Type: "individual",
+            Deadline: "2021-12-31T23:59:59Z",
+            "Starter Code":
+                "ksu-cis300-spring-2025/lab-3-model-solution-weeser",
+        };
+        createAssignment(assignment);
         console.log("Assignment created");
-		 setStarterCode(assignment);
+        setStarterCode(assignment);
         console.log("Starter code set");
-		setAutoGrading(assignment);
-        console.log("Auto-grading configured");            
-	}
+        setAutoGrading(assignment);
+        console.log("Auto-grading configured");
+    }
 
     function loadAssignmentsFromCSV(csv) {
         let lines = csv.split("\n");
-        let headers = lines[0].split(",");
+        let headers = lines[0].split(",").trim();
         let assignments = [];
 
         for (let i = 1; i < lines.length; i++) {
             let obj = {};
-            let currentline = lines[i].split(",");
-
-            for (let j = 0; j < headers.length; j++) {
-                obj[headers[j].trim()] = currentline[j].trim();
+            let currentline = lines[i].split(",").trim();
+            if (currentline.length !== headers.length) {
+                console.error("Incomplete data for row " + i);
+            } else {
+                for (let j = 0; j < headers.length; j++) {
+                    obj[headers[j]] = currentline[j];
+                }
             }
 
             assignments.push(obj);
@@ -111,7 +127,7 @@
         localStorage.setItem("currentIndex", 0);
     }
 
-    function getFile () {
+    function getFile() {
         let fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.accept = ".csv";
@@ -131,7 +147,7 @@
         button.innerHTML = innerHTML;
         button.style.position = "fixed";
         button.style.top = top + "px";
-        button.style.right = right +"px";
+        button.style.right = right + "px";
         button.style.zIndex = 1000;
         button.onclick = clickHandler;
         document.body.appendChild(button);
