@@ -116,7 +116,7 @@
         try{
         let assignments = JSON.parse(localStorage.getItem("assignments"));
         let currentIndex = parseInt(localStorage.getItem("currentIndex"));
-        if (!assignments || !currentIndex) {
+        if (!assignments === null) {
             console.error("No assignments loaded");
             return
         }
