@@ -76,7 +76,7 @@
                 }
             }
 
-            clickButton('#new-assignment-cancel button[type="submit"]', 500); // Click "finish"
+            clickButton('#new-assignment-cancel + button[type="submit"]', 500); // Click "finish"
         }
     }
 
