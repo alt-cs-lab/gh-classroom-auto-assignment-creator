@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         GitHub Classroom Auto Assignment Creator
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/alt-cs-lab/gh-classroom-auto-assignment-creator
 // @version      1.0
 // @description  Automate assignment creation in GitHub Classroom
-// @author       You
+// @author       weeser
 // @match        https://classroom.github.com/classrooms/*/new_assignments/new
 // @match        https://classroom.github.com/classrooms/*/new_assignments/continue?current_step=1
 // @match        https://classroom.github.com/classrooms/*/new_assignments/continue?current_step=2
