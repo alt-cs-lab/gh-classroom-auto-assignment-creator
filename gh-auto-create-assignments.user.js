@@ -121,7 +121,7 @@
             return
         }
         for (; currentIndex < assignments.length && checkTrue(assignments[currentIndex], "Added"); currentIndex++) {
-            console.log("Skipping " + assignments[i]["Name"]);
+            console.log("Skipping " + assignments[currentIndex]["Name"]);
         }
         if (currentIndex >= assignments.length) {
             console.error("All assignments created");
