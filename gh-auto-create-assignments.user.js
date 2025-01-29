@@ -40,10 +40,9 @@
         if (window.location.pathname.includes("/new_assignments/new")) {
             console.log("Step 1: Creating Assignment");
 
-            setInputValue('input[name="title"]', assignment["Assignment Name"]);
-            setDropdownValue('select[name="repository_privacy"]', assignment["Privacy"]); // "public" or "private"
-            setDropdownValue('select[name="submission_type"]', assignment["Type"]); // "individual" or "group"
-            setInputValue('input[name="deadline"]', assignment["Deadline"]);
+            setInputValue('#assignment_form_title', assignment["Assignment Name"]);
+            setInputValue('#assignment_form_deadline_deadline_at', assignment["Deadline"]);            
+            setDropdownValue('select[name="submission_type"]', "individual"); // "individual" or "group"
 
             clickButton('button[type="submit"]'); // Click "Create Assignment"
         }
