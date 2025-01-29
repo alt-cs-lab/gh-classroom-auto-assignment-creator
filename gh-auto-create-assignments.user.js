@@ -51,14 +51,20 @@
                 "#assignment_form_title",
                 assignment["Assignment Name"]
             );
-            setInputValue(
-                "#assignment_form_deadline_deadline_at",
-                assignment["Deadline"]
-            );
+            if (assignment.hasOwnProperty("Deadline")) {
+                setInputValue(
+                    "#assignment_form_deadline_deadline_at",
+                    assignment["Deadline"]
+                );
+            }
+            
             setDropdownValue('select[name="submission_type"]', "individual"); // "individual" or "group"
 
             submitForm("#assignment-form", 1000); // Click "Create Assignment"/"continue"
+            console.log("Assignment information set");
+            return true;
         }
+        return false;
     }
 
     function setStarterCode(assignment) {
@@ -67,14 +73,22 @@
 
             setInputValue(
                 "#github-repo-input--default",
-                assignment["Starter Code"]
+                assignment["Repo Template"]
             );
+            if(!assignment.hasOwnProperty("Privacy")) {
+                assignment["Privacy"] = "private";
+            }
+
             setInputValue(
                 "#assignment_form_visibility_private",
                 assignment["Privacy"]
             );
             clickButton('#new-assignment-cancel + button[type="submit"]', 500); // Click "Continue"
+            
+            console.log("Starter code set");
+            return true;
         }
+        return false;
     }
 
     function setAutoGrading(assignment) {
@@ -84,24 +98,28 @@
             console.log("Do this manually....I don't have time");
 
             clickButton('#new-assignment-cancel + button[type="submit"]', 500); // Click "finish"
+            console.log("Auto-grading configured");
+            console.log("Assignment created successfully");
+            return true;
         }
+        return false;
     }
 
     function autoFillAssignment() {
-        let assignment = {
-            "Assignment Name": "Assignment 1",
-            Privacy: "private",
-            Type: "individual",
-            Deadline: "2021-12-31T23:59:59Z",
-            "Starter Code":
-                "ksu-cis300-spring-2025/lab-3-model-solution-weeser",
-        };
-        createAssignment(assignment);
-        console.log("Assignment created");
-        setStarterCode(assignment);
-        console.log("Starter code set");
-        setAutoGrading(assignment);
-        console.log("Auto-grading configured");
+        try{
+        let assignments = JSON.parse(localStorage.getItem("assignments"));
+        let currentIndex = parseInt(localStorage.getItem("currentIndex"));
+        let assignment = assignments[currentIndex];
+        updateLabName(assignment["Name"] + " - " + assignment["Assignment Name"]);
+        if(createAssignment(assignment) && setStarterCode(assignment) && setAutoGrading(assignment)) {
+            console.log(assignment["Name"] + " finished");
+            localStorage.setItem("currentIndex", currentIndex + 1);
+            return true;
+        }}
+        catch(e){
+            console.error("Error: " + e);
+        }
+        return false;
     }
 
     function loadAssignmentsFromCSV(csv) {
@@ -152,6 +170,27 @@
         button.onclick = clickHandler;
         document.body.appendChild(button);
     }
+
+    function updateLabName(labName) {
+        let labNameDiv = document.getElementById("lab-name-display");
+        if (!labNameDiv) {
+            labNameDiv = document.createElement("div");
+            labNameDiv.id = "lab-name-display";
+            labNameDiv.style.position = "fixed";
+            labNameDiv.style.top = "0";
+            labNameDiv.style.left = "50%";
+            labNameDiv.style.transform = "translateX(-50%)";
+            labNameDiv.style.backgroundColor = "#fff";
+            labNameDiv.style.padding = "10px";
+            labNameDiv.style.zIndex = 1000;
+            labNameDiv.style.fontSize = "20px";
+            labNameDiv.style.fontWeight = "bold";
+            document.body.appendChild(labNameDiv);
+        }
+        labNameDiv.innerHTML = labName;
+    }
+
+
     injectButton("Auto Fill Assignment", 10, 10, autoFillAssignment);
     injectButton("Load Assignments", 40, 10, getFile);
 })();
