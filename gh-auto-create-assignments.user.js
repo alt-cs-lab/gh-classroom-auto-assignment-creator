@@ -89,11 +89,11 @@
 			"Starter Code": "ksu-cis300-spring-2025/lab-3-model-solution-weeser"
 		};
 		createAssignment(assignment);
-        console.log("Assignment created successfully");
-		// setStarterCode(assignment);
-        console.log("Starter code set successfully");
-		// setAutoGrading(assignment);
-        console.log("Auto-grading configured successfully");            
+        console.log("Assignment created");
+		 setStarterCode(assignment);
+        console.log("Starter code set");
+		setAutoGrading(assignment);
+        console.log("Auto-grading configured");            
 	}
     function injectButton() {
         let button = document.createElement("button");
