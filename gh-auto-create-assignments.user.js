@@ -13,6 +13,7 @@
 
 (function () {
     "use strict";
+    console.debug("Auto Assignment Creator Loaded. Auto Mode:");
 
     const autoModeCheckedID = "injectedCheckbox_autoMode";
     const autoMode = localStorage.getItem(autoModeCheckedID) === "true";
@@ -246,12 +247,14 @@
      * @param {string} [classes] - Optional CSS classes for the checkbox.
      * @param {boolean} [checked] - Initial checked state.
      */
-    function injectCheckbox(id, labelText, top, right, changeHandler, classes = "", checked = false) {
+    function injectCheckbox(id, labelText, top, right, classes = "", checked = false) {
+        console.debug("Injecting checkbox:", id, labelText, top, right, classes, checked);
         let container = document.createElement("div");
         container.style.position = "fixed";
         container.style.top = top + "px";
         container.style.right = right + "px";
         container.style.zIndex = 1000;
+        container.style.backgroundColor = "#fff";
 
         let checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -262,14 +265,17 @@
         let label = document.createElement("label");
         label.htmlFor = checkbox.id;
         label.style.marginLeft = "6px";
+        label.style.marginRight= "6px";
+
         label.innerText = labelText;
 
         checkbox.onchange = function(e) {
-            changeHandler(e.target.checked, e);
+            console.debug("Checkbox " + id + " changed to " + e.target.checked);
+            localStorage.setItem(e.target.id, e.target.checked);
         };
 
-        container.appendChild(checkbox);
         container.appendChild(label);
+        container.appendChild(checkbox);
         document.body.appendChild(container);
         return checkbox;
     }
@@ -334,15 +340,12 @@
         document.body.removeChild(link);
     }
 
-    function changeHandler(checked, e) {
-        console.log("Auto Mode: " + checked);
-        localStorage.setItem(e.target.id, checked);
-    }
 
     let top = 10;
     let right = 10;
     //injectCheckbox(id, labelText, top, right, changeHandler, classes = "", checked = false)
-    injectCheckbox("autoMode", "AUTO MODE", top, right, changeHandler, classes="", checked=autoMode);
+    injectCheckbox("autoMode", "AUTO MODE", top, right, "", autoMode);
+
     top += 30;
     injectButton("Load Assignments", top, right, getFile);
     top+=30;
