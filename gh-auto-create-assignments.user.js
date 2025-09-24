@@ -1,7 +1,8 @@
+
 // ==UserScript==
 // @name         GitHub Classroom Auto Assignment Creator
 // @namespace    https://github.com/alt-cs-lab/gh-classroom-auto-assignment-creator
-// @version      1.0
+// @version      2.0
 // @description  Automate assignment creation in GitHub Classroom
 // @author       weeser
 // @match        https://classroom.github.com/classrooms/*/new_assignments/new
@@ -13,6 +14,8 @@
 (function () {
     "use strict";
 
+    const autoModeCheckedID = "injectedCheckbox_autoMode";
+    const autoMode = localStorage.getItem(autoModeCheckedID) === "true";
     function setInputValue(selector, value) {
         let input = document.querySelector(selector);
         if (input) {
@@ -43,6 +46,7 @@
         }
     }
 
+    //Step 1
     function createAssignment(assignment, submit = false) {
         if (window.location.pathname.includes("/new_assignments/new")) {
             console.log("Step 1: Creating Assignment");
@@ -54,7 +58,7 @@
             if (assignment.hasOwnProperty("Deadline")) {
                 setInputValue(
                     "#assignment_form_deadline_deadline_at",
-                    assignment["Deadline"]
+                    assignment.Deadline
                 );
             }
 
@@ -69,6 +73,7 @@
         return false;
     }
 
+    //Step 2
     function setStarterCode(assignment, submit = false) {
         if (window.location.href.includes("current_step=1")) {
             console.log("Step 2: Setting Starter Code");
@@ -78,12 +83,12 @@
                 assignment["Repo Template"]
             );
             if (!assignment.hasOwnProperty("Privacy")) {
-                assignment["Privacy"] = "private";
+                assignment.Privacy = "private";
             }
 
             setInputValue(
                 "#assignment_form_visibility_private",
-                assignment["Privacy"]
+                assignment.Privacy
             );
             if (submit) {
                 clickButton(
@@ -98,6 +103,7 @@
         return false;
     }
 
+    //Step 3
     function setAutoGrading(assignment, submit = false) {
         if (window.location.href.includes("current_step=2")) {
             console.log("Step 3: Configuring Auto-Grading");
@@ -111,6 +117,7 @@
                 ); // Click "finish"
                 console.log("Auto-grading configured");
                 console.log("Assignment created successfully");
+
                 return true;
             }
         }
@@ -127,6 +134,7 @@
         return false;
     }
 
+    //main
     function autoFillAssignment(submit = false) {
         try {
             let assignments = JSON.parse(localStorage.getItem("assignments"));
@@ -141,7 +149,7 @@
                 checkTrue(assignments[currentIndex], "Added");
                 currentIndex++
             ) {
-                console.log("Skipping " + assignments[currentIndex]["Name"]);
+                console.log("Skipping " + assignments[currentIndex].Name);
             }
             if (currentIndex >= assignments.length) {
                 console.error("All assignments created");
@@ -151,15 +159,26 @@
             localStorage.setItem("currentIndex", currentIndex);
             let assignment = assignments[currentIndex];
             updateLabLabel(
-                assignment["Name"] + " - " + assignment["Assignment Name"]
+                assignment.Name + " - " + assignment["Assignment Name"]
             );
             createAssignment(assignment,submit);
             setStarterCode(assignment,submit);
             if (setAutoGrading(assignment,submit)) {
-                console.log(assignment["Name"] + " finished");
-                assignments["Added"] = true;
+                console.log(assignment.Name + " finished");
+                assignments.Added = true;
                 localStorage.setItem("currentIndex", currentIndex + 1);
-                return true;
+                // Redirect after a short delay to allow submission to complete
+                setTimeout(() => {
+                    // Extract classroom ID from URL
+                    const match = window.location.pathname.match(/classrooms\/(.*?)\//);
+                    const classroomId = match ? match[1] : null;
+                    if (classroomId) {
+                        window.location.href = `/classrooms/${classroomId}/new_assignments/new`;
+                    } else {
+                        // fallback: reload current page
+                        window.location.reload();
+                    }
+                }, 2000);
             }
         } catch (e) {
             console.error("Error: " + e);
@@ -218,13 +237,50 @@
         document.body.appendChild(button);
     }
 
+    /**
+     * Injects a checkbox with a label into the page.
+     * @param {string} labelText - The text to display next to the checkbox.
+     * @param {number} top - The top position in pixels.
+     * @param {number} right - The right position in pixels.
+     * @param {function} changeHandler - Function to call when checkbox is toggled.
+     * @param {string} [classes] - Optional CSS classes for the checkbox.
+     * @param {boolean} [checked] - Initial checked state.
+     */
+    function injectCheckbox(id, labelText, top, right, changeHandler, classes = "", checked = false) {
+        let container = document.createElement("div");
+        container.style.position = "fixed";
+        container.style.top = top + "px";
+        container.style.right = right + "px";
+        container.style.zIndex = 1000;
+
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = classes;
+        checkbox.checked = checked;
+        checkbox.id = "injectedCheckbox_" + id;
+
+        let label = document.createElement("label");
+        label.htmlFor = checkbox.id;
+        label.style.marginLeft = "6px";
+        label.innerText = labelText;
+
+        checkbox.onchange = function(e) {
+            changeHandler(e.target.checked, e);
+        };
+
+        container.appendChild(checkbox);
+        container.appendChild(label);
+        document.body.appendChild(container);
+        return checkbox;
+    }
+
     function updateLabNameDisplay() {
         let assignments = JSON.parse(localStorage.getItem("assignments"));
         let currentIndex = parseInt(localStorage.getItem("currentIndex"));
         if (assignments !== null) {
             let assignment = assignments[currentIndex];
             updateLabLabel(
-                assignment["Name"] + " - " + assignment["Assignment Name"]
+                assignment.Name + " - " + assignment["Assignment Name"]
             );
         }
     }
@@ -254,11 +310,11 @@
             console.error("No assignments to export");
             return;
         }
-    
+
         let csv = [];
         let headers = Object.keys(assignments[0]);
         csv.push(headers.join(","));
-    
+
         for (let i = 0; i < assignments.length; i++) {
             let row = [];
             for (let j = 0; j < headers.length; j++) {
@@ -266,7 +322,7 @@
             }
             csv.push(row.join(","));
         }
-    
+
         let csvContent = csv.join("\n");
         let blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         let link = document.createElement("a");
@@ -278,9 +334,29 @@
         document.body.removeChild(link);
     }
 
-    injectButton("Load Assignments", 10, 10, getFile);
-    injectButton("Export Assignments", 40, 10, exportAssignments);
-    injectButton("Auto Fill", 70, 10, autoFillAssignment, "Button--secondary Button--medium Button");
-    injectButton("Auto Fill and SUBMIT", 105, 10, () => autoFillAssignment(true), "Button--primary Button--medium Button");
+    function changeHandler(checked, e) {
+        console.log("Auto Mode: " + checked);
+        localStorage.setItem(e.target.id, checked);
+    }
+
+    let top = 10;
+    let right = 10;
+    //injectCheckbox(id, labelText, top, right, changeHandler, classes = "", checked = false)
+    injectCheckbox("autoMode", "AUTO MODE", top, right, changeHandler, classes="", checked=autoMode);
+    top += 30;
+    injectButton("Load Assignments", top, right, getFile);
+    top+=30;
+    injectButton("Export Assignments", top, right, exportAssignments);
+    top+=30;
+    injectButton("Auto Fill", top, right, autoFillAssignment, "Button--secondary Button--medium Button");
+    top+=30;
+    injectButton("Auto Fill and SUBMIT", top, right, () => autoFillAssignment(true), "Button--primary Button--medium Button");
     autoFillAssignment();
+    // Run autoFillAssignment after a short delay when the page loads
+    setTimeout(() => {
+        let checkbox = document.getElementById('injectedCheckbox_autoMode');
+        console.debug("Auto Mode Checkbox State:", checkbox.checked);
+        autoFillAssignment(checkbox.checked);
+    }, 1500);
+
 })();
